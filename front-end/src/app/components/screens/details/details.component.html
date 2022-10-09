@@ -1,0 +1,51 @@
+<div class="row">
+    <div class="col-sm-4">
+        <div class="card" style="width: 18rem;">
+            <img class="card-img-top" src="..." alt="Card image cap">
+            
+          </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Producto</h5>
+            <p class="card-text">Descripción</p>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Supermercado</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Precio</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">1</th>
+                <td>Santa Isabel</td>
+                <td>20/02/2020</td>
+                <td>$999</td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td>Jumbo</td>
+                <td>20/02/2020</td>
+                <td>$1999</td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td>Lider</td>
+                <td>20/02/2020</td>
+                <td>$2999</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="text-center">
+            <button id="agregarboton" type="submit" [routerLink]="['/cart']" routerLinkActive="router-link-active"  class="btn btn-primary">Agregar</button>
+        </div>
+    </div>
+</div>

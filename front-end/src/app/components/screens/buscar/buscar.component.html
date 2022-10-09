@@ -1,0 +1,149 @@
+<div class="container">
+    <div class="row">
+        <div class="col-3">
+            <h1>Filtrar por categoria:</h1>
+            <form>
+                <div class="input-group mb-5">
+                    <input type="text" class="form-control" placeholder="Buscar por palabra clave">
+                    <div class="input-group-prepend">
+                        <button class="btn material-icons border-right border-top border-bottom">search</button>
+                    </div>
+                </div>
+                <div class="col d-flex flex-column">
+                    <div id="lacteos">
+                        <label class="form-label">Lácteos</label>
+                        <div class="form-check col">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Leches</label>
+                        </div>
+                        <div class="form-check col">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Huevos</label>
+                        </div>
+                        <div class="form-check col">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Mantequillas y Margarinas</label>
+                        </div>
+                        <div class="form-check col">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Postres</label>
+                        </div>
+                        <div class="form-check col">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Otros</label>
+                        </div>
+                    </div>
+                    <div id="despensa">
+                        <label class="form-label mt-5">Despensa</label>
+                        <div class="form-check col-12">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Fideos, pastas y salsas</label>
+                        </div>
+                        <div class="form-check col-12">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Arroz, legumbres y semillas</label>
+                        </div>
+                        <div class="form-check col-12">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Aceite, sal y condimentos</label>
+                        </div>
+                        <div class="form-check col-12">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Conservas</label>
+                        </div>
+                        <div class="form-check col-12">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Snacks y cóctel</label>
+                        </div>
+                        <div class="form-check col-12">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Aderezos</label>
+                        </div>
+                        <div class="form-check col-12">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Harinas y polvos</label>
+                        </div>
+                        <div class="form-check col-12">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Repostería</label>
+                        </div>
+                        <div class="form-check col-12">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Otros</label>
+                        </div>
+                    </div>
+                    <div id="FrutasyVer">
+                        <label class="form-label mt-5">Frutas y verduras</label>
+                        <div class="form-check col-12">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Frutas</label>
+                        </div>
+                        <div class="form-check col-12">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Verduras</label>
+                        </div>
+                        <div class="form-check col-12">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Frutos Secos</label>
+                        </div>
+                    </div>
+                    <div id="Limpiza">
+                        <label class="form-label mt-5">Limpieza</label>
+                        <div class="form-check col-12">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Papeles</label>
+                        </div>
+                        <div class="form-check col-12">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Limpieza de ropa</label>
+                        </div>
+                        <div class="form-check col-12">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Baño y cocina</label>
+                        </div>
+                        <div class="form-check col-12">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Aerosoles y desinfectantes</label>
+                        </div>
+                        <div class="form-check col-12">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Limpieza de pisos y muebles</label>
+                        </div>
+                        <div class="form-check col-12">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Otros</label>
+                        </div>
+                    <div class="mt-5">
+                        <label for="precio" class="form-label col-12">Precio</label>
+                        <input type="range" min="0" max="100000" value="1000" class="form-range col-12">
+                        <div class="d-flex flex-wrap justify-content-between">
+                            <label class="form-label">0</label>
+                            <label class="form-label">100000</label>
+                        </div>
+                    </div>
+                </div>
+            
+        </div>
+            </form>
+        </div>
+        <div class="col-9">
+            <div class="container">
+                <div *ngFor="let carta of ListaProductos">
+                    <div class="card products" [routerLink]="['/details']" routerLinkActive="router-link-active">
+                        <div class="info-product" [routerLink]="['/inicio']">
+                            <img class="card-img-top" src="{{carta.imagen}}" alt="">
+                            <div class="card-body">
+                                <p class="brand">{{carta.marca}}</p>
+                                <p class="name-product">{{carta.nombre}}</p>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button id="agregarboton" type="submit" [routerLink]="['/cart']" routerLinkActive="router-link-active"  class="btn btn-primary">Agregar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>

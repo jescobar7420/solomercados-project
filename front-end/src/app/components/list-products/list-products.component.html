@@ -1,0 +1,45 @@
+<div class="container-fluid">
+    <div class="row">
+        <!--<div class="col-md-auto">
+            <div id="primary-card" class="card">
+                <div class="card-header">
+                LISTA DE PRODUCTOS
+                </div>
+                <div class="list-products">
+                    <ul class="list-group list-group-flush">
+                        <li class="card item-products"></li>
+                        <li class="card item-products"></li>
+                        <li class="card item-products"></li>
+                        <li class="card item-products"></li>
+                        <li class="card item-products"></li>
+                        <li class="card item-products"></li>
+                        <li class="card item-products"></li>
+                    </ul>
+                </div>
+                <div>
+                    <button type="button" id="boton-calcular" class="btn btn-primary">CALCULAR</button>
+                </div>
+            </div>
+        </div>-->
+        <div class="col-12">
+            <h2>PRODUCTOS DESTACADOS</h2>
+            <div class="container">
+                <div *ngFor="let carta of ListaProductos">
+                    <div class="card products" [routerLink]="['/details']" routerLinkActive="router-link-active">
+                        <div class="info-product" [routerLink]="['/inicio']">
+                            <img class="card-img-top" src="{{carta.imagen}}" alt="">
+                            <div class="card-body">
+                                <p class="brand">{{carta.marca}}</p>
+                                <p class="name-product">{{carta.nombre}}</p>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button id="agregarboton" type="submit" [routerLink]="['/cart']" routerLinkActive="router-link-active"  class="btn btn-primary">Agregar</button>
+                        </div>
+                    </div>
+                </div>
+            <!-- <button id="vermas" type="button" class="btn btn-secondary">Ver más</button> -->
+            </div>
+        </div>
+    </div>
+</div>
