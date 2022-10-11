@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { FilterComponent } from './components/filter/filter.component';
 import { ListProductsComponent } from './components/list-products/list-products.component';
 import { BuscarComponent } from './components/screens/buscar/buscar.component'
 import { CartComponent } from './components/screens/cart/cart.component';
@@ -9,9 +10,10 @@ import { LoginComponent } from './components/screens/login/login.component';
 
 const routes: Routes = [
   {path:'', component:ListProductsComponent},
+  {path:'categoria/:id', component:FilterComponent},
   {path:'buscar', component:BuscarComponent},
   {path:'cart',component:CartComponent},
-  {path:'details',component:DetailsComponent},
+  {path:'details/:id',component:DetailsComponent},
   {path:'login',component:LoginComponent}
 ];
 

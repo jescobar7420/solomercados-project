@@ -12,6 +12,7 @@ import { CartComponent } from './components/screens/cart/cart.component';
 import { DetailsComponent } from './components/screens/details/details.component';
 import { LoginComponent } from './components/screens/login/login.component';
 import { HttpClientModule } from '@angular/common/http';
+import { FilterComponent } from './components/filter/filter.component';
 
 
 @NgModule({
@@ -23,6 +24,7 @@ import { HttpClientModule } from '@angular/common/http';
     CartComponent,
     DetailsComponent,
     LoginComponent,
+    FilterComponent,
   ],
   imports: [
     BrowserModule,

@@ -19,31 +19,14 @@
                             <mat-icon id="list">list</mat-icon>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                          <li><a class="dropdown-item" href="#">Quesos y Fiambres</a></li>
-                          <li><a class="dropdown-item" href="#">Panadería y Pastelería</a></li>
-                          <li><a class="dropdown-item" href="#">Desayuno y Dulces</a></li>
-                          <li><a class="dropdown-item" href="#">Congelados</a></li>
-                          <li><a class="dropdown-item" href="#">"Vinos, Cervezas y Licores"</a></li>
-                          <li><a class="dropdown-item" href="#">Bebé</a></li>
-                          <li><a class="dropdown-item" href="#">Mascotas</a></li>
-                          <li><a class="dropdown-item" href="#">Hogar</a></li>
-                          <li><a class="dropdown-item" href="#">Pescadería</a></li>
-                          <li><a class="dropdown-item" href="#">Comidas Preparadas</a></li>
-                          <li><a class="dropdown-item" href="#">Bebidas Vegetales</a></li>
-                          <li><a class="dropdown-item" href="#">Lácteos</a></li>
-                          <li><a class="dropdown-item" href="#">Despensa</a></li>
-                          <li><a class="dropdown-item" href="#">Frutas y Verduras</a></li>
-                          <li><a class="dropdown-item" href="#">Carnicería</a></li>
-                          <li><a class="dropdown-item" href="#">Limpieza</a></li>
-                          <li><a class="dropdown-item" href="#">Botillería</a></li>
+                          <li *ngFor="let categoria of ListaCategorias">
+                            <a class="dropdown-item" href="{{categoria.id_categoria}}" [routerLink]="['/categoria', categoria.id_categoria]">{{categoria.categoria}}</a>
+                          </li>
                         </ul>
                     </div>
                 </li>
             </ul>
         </div>
-        
-        
-        
     </div>
 </nav>
 

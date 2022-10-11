@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class ProductosService {
+export class SupermercadosProductosService {
 
   constructor(private http:HttpClient) { }
   
@@ -21,15 +21,7 @@ export class ProductosService {
     ),
   };
   
-  GetListProductos():Observable<any> {
-    return this.http.get(`${environment.hostname}/ListProductos`);
-  }
-  
-  GetProducto(id:number):Observable<any> {
-    return this.http.get(`${environment.hostname}/Producto/${id}`);
-  }
-  
-  GetListProductsCategory(id:number):Observable<any> {
-    return this.http.get(`${environment.hostname}/ProductosCategoria/${id}`);
+  GetListSuperProductsId(id:number):Observable<any> {
+    return this.http.get(`${environment.hostname}/ListSupermercadosProductos/${id}`);
   }
 }

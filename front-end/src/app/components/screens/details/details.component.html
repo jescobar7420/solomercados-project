@@ -1,15 +1,38 @@
 <div class="row">
     <div class="col-sm-4">
-        <div class="card" style="width: 18rem;">
-            <img class="card-img-top" src="..." alt="Card image cap">
-            
-          </div>
+        <div class="card" style="width: 30rem;">
+            <img class="card-img-top" src="{{Producto.imagen}}" alt="Card image cap">
+        </div>
     </div>
     <div class="col-sm-4">
       <div class="card">
         <div class="card-body">
-            <h5 class="card-title">Producto</h5>
-            <p class="card-text">Descripción</p>
+            <div class="name-product">
+              <h5 class="card-title">{{Producto.nombre}}</h5>
+            </div>
+            <br>
+            <div class="category-product">
+              <span class="features-product">Categoria: </span>
+              <span>{{Producto.categoria}}</span>
+            </div>
+            <div class="brand-product">
+              <span class="features-product">Marca: </span>
+              <span>{{Producto.marca}}</span>
+            </div>
+            <div class="type-product">
+              <span class="features-product">Tipo de producto: </span>
+              <span>{{Producto.tipo}}</span>
+            </div>
+            <br>
+            <div class="description-product">
+              <span class="features-product">Descripción: </span>
+              <span class="card-text">{{Producto.descripcion}}</span>
+            </div>
+            <br>
+            <div class="ingredients-product" *ngIf="exists_ingredients(Producto.ingredientes)">
+              <span class="features-product">Ingredientes: </span>
+              <span class="card-text">{{Producto.ingredientes}}</span>
+            </div>
         </div>
       </div>
     </div>
@@ -17,30 +40,20 @@
         <table class="table">
             <thead>
               <tr>
-                <th scope="col">#</th>
                 <th scope="col">Supermercado</th>
                 <th scope="col">Fecha</th>
-                <th scope="col">Precio</th>
+                <th scope="col">Precio Normal</th>
+                <th scope="col">Oferta</th>
+                <th scope="col">Disponible</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>Santa Isabel</td>
-                <td>20/02/2020</td>
-                <td>$999</td>
-              </tr>
-              <tr>
-                <th scope="row">2</th>
-                <td>Jumbo</td>
-                <td>20/02/2020</td>
-                <td>$1999</td>
-              </tr>
-              <tr>
-                <th scope="row">2</th>
-                <td>Lider</td>
-                <td>20/02/2020</td>
-                <td>$2999</td>
+              <tr *ngFor="let row of ListaSuperProducto">
+                <td><a href="{{row.url_product}}">{{row.supermercado}}</a></td>
+                <td>{{row.fecha}}</td>
+                <td>${{row.precio_normal}}</td>
+                <td>${{row.precio_oferta}}</td>
+                <td>${{row.disponibilidad}}</td>
               </tr>
             </tbody>
           </table>

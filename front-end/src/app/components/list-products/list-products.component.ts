@@ -15,7 +15,7 @@ export class ListProductsComponent implements OnInit {
 
   ngOnInit(): void {
     this.http.GetListProductos().subscribe(datos => {
-      for(let i=0; i<datos.items.length; i++) {
+      for(let i=0; i<datos.items.length && i<40; i++) {
         this.ListaProductos.push(datos.items[i]);
       }
     })

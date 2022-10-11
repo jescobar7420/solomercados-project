@@ -1,28 +1,7 @@
 <div class="container-fluid">
     <div class="row">
-        <!--<div class="col-md-auto">
-            <div id="primary-card" class="card">
-                <div class="card-header">
-                LISTA DE PRODUCTOS
-                </div>
-                <div class="list-products">
-                    <ul class="list-group list-group-flush">
-                        <li class="card item-products"></li>
-                        <li class="card item-products"></li>
-                        <li class="card item-products"></li>
-                        <li class="card item-products"></li>
-                        <li class="card item-products"></li>
-                        <li class="card item-products"></li>
-                        <li class="card item-products"></li>
-                    </ul>
-                </div>
-                <div>
-                    <button type="button" id="boton-calcular" class="btn btn-primary">CALCULAR</button>
-                </div>
-            </div>
-        </div>-->
         <div class="col-12">
-            <h2>PRODUCTOS DESTACADOS</h2>
+            <h2>{{Categoria.categoria}}</h2>
             <div class="container">
                 <div *ngFor="let producto of ListaProductos">
                     <div class="card products" [routerLink]="['/details', producto.id_producto]" routerLinkActive="router-link-active">
@@ -38,7 +17,6 @@
                         </div>
                     </div>
                 </div>
-            <!-- <button id="vermas" type="button" class="btn btn-secondary">Ver más</button> -->
             </div>
         </div>
     </div>
