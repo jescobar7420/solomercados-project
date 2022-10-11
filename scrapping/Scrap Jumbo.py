@@ -1,6 +1,6 @@
-from venv import create
 import pandas as pd
-import string
+import pandas.io.sql as sqlio
+import psycopg2
 from os.path import exists
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
@@ -9,10 +9,15 @@ from time import sleep
 from datetime import date
 
 
-MAIN_PATH = 'E:/Universidad/Asignaturas/Taller Ingeniería de Software/scrapping_proyect'
+MAIN_PATH = 'E:/Universidad/Asignaturas/Taller Ingeniería de Software/solomercados-project/scrapping'
 DIRECTORY_PATH = '/Jumbo/'
 MAIN_URL = 'https://www.jumbo.cl'
 NAME_SUPERMARKET = 'Jumbo'
+DB_USER = 'postgres'
+DB_HOST = 'localhost'
+DB_DATABASE = 'solomercados2'
+DB_PASS = 123
+DB_PORT = 5432
 
 
 def find_text_by_class_beautifulsoup(soup, tag, class_name):
@@ -30,6 +35,14 @@ def find_by_class_beautifulsoup(soup, tag, class_name):
         data = 'NA'
     return data
 
+
+def find_all_by_class_beautifulsoup(soup, tag, class_name):
+    try:
+        data = soup.find_all(tag, class_ = class_name)
+    except:
+        data = 'NA'
+    return data
+    
 
 def find_firts_text_element_by_class_beautifulsoup(soup, tag, class_name):
     try:
@@ -114,7 +127,7 @@ def get_data_product_selenium(browser, id_category, id_brand, id_type, id_produc
     if description2 != 'NA' and description2 != '':
         description_product += ' ' + description2
     
-    ingredients = get_text_selenium(browser, '//*[@id="root"]/div/div[2]/div/div/main/div[3]/div[1]/div[3]/div[2]')
+    normal_price = get_text_selenium(browser, '//*[@id="root"]/div/div[2]/div/div/main/div[3]/div[1]/div[3]/div[2]')
     
     data = [str(id_product),
             str(id_category),
@@ -123,11 +136,16 @@ def get_data_product_selenium(browser, id_category, id_brand, id_type, id_produc
             str(name_product),
             str(image_product),
             str(description_product),
-            str(ingredients)]
+            str(normal_price)]
     return data
 
 
-def get_data_product_beautifulsoup(soup, id_category, id_brand, id_type, id_product):
+def clear_text(text):
+    text_clear = text.replace("'", "`")
+    return text_clear
+
+
+def get_data_product_beautifulsoup(soup):
     # If the product can't load or the product already exists
     error_product = find_text_by_class_beautifulsoup(soup, 'div', 'error-404-empty-message')
     if error_product != 'NA' or error_product == '':
@@ -140,7 +158,8 @@ def get_data_product_beautifulsoup(soup, id_category, id_brand, id_type, id_prod
         name_product = (find_text_by_class_beautifulsoup(soup, 'h1', 'product-name')).upper()
         if name_product == 'NA' or name_product == '':
             print('\tError read product - {}'.format(url_product))
-            return 'NA'
+            return 'Error read'
+    name_product = clear_text(name_product)
     
     # URL of the image is in the style of a div
     image_product = find_by_class_beautifulsoup(soup, 'div', 'zoomed-image')
@@ -150,8 +169,6 @@ def get_data_product_beautifulsoup(soup, id_category, id_brand, id_type, id_prod
             image_product = clear_url_image(image_product)
         except:
             image_product = 'NA'
-    if image_product == '':
-        image_product == 'NA'
        
     # Description can has two different xpath
     description1 = find_text_by_class_beautifulsoup(soup, 'p', '')
@@ -159,33 +176,48 @@ def get_data_product_beautifulsoup(soup, id_category, id_brand, id_type, id_prod
     
     description_product = 'NA'
     if description1 != 'NA' and description1 != '':
-        description_product = description1
+        if description_product == 'NA':
+            description_product = description1
+        else:
+            description_product += description1
     
     if description2 != 'NA' and description2 != '':
-        description_product += ' ' + description2
+        if description_product == 'NA':
+            description_product = description2
+        else:
+            description_product += ' ' + description1
     
     ingredients = find_text_by_class_beautifulsoup(soup, 'div', 'product-ingredients-text')
     if ingredients == '':
         ingredients == 'NA'
     
-    data = [str(id_product),
-            str(id_category),
-            str(id_brand),
-            str(id_type),
-            str(name_product),
+    data = [str(clear_text(name_product)),
             str(image_product),
-            str(description_product),
-            str(ingredients)]
+            str(clear_text(description_product)),
+            str(clear_text(ingredients))]
     return data
 
 
-def get_data_categories(df_categories, categories_element):   
+def get_data_categories(connection, cursor, df_categories, categories_element):   
     # Remove categories are void and get data of all categories
     for item in categories_element:
-        if item.text != 'Exclusivo en Jumbo' and item.get('href') != '/':
-            if exists_row_dataframe(df_categories, 'category', item.text) == False:
-                df_row = pd.DataFrame(data=[[len(df_categories), (item.text).upper()]], columns=columns_category)
+        if item.text != 'Exclusivo en Jumbo' and item.get('href') != '/' and exists_row_database(cursor, 'categoria', 'categorias', (item.text).upper()) == False:
+            # Insert into database
+            if insert_into_categorias(connection, cursor, (item.text).upper()) == True:
+                # Insert into dataframe
+                id_category = get_id_table(cursor, 'id_categoria', 'categorias', 'categoria', (item.text).upper())
+                data = [id_category, (item.text).upper()]
+                df_row = pd.DataFrame(data=[data], columns=columns_category)
                 df_categories = pd.concat([df_categories, df_row], ignore_index=True)
+    return df_categories
+
+
+def get_data_categories_supermarket(connection, df_categories, categories_element):   
+    # Remove categories are void and get data of all categories
+    for item in categories_element:
+        if item.text != 'Exclusivo en Jumbo' and item.get('href') != '/' and exists_row_database(cursor, 'categoria', 'categorias', (item.text).upper()) == True:
+            df_row = sqlio.read_sql_query("SELECT id_categoria AS id_category, categoria AS category FROM categorias WHERE categoria = '{}'".format((item.text).upper()), connection)
+            df_categories = pd.concat([df_categories, df_row], ignore_index=True)
     return df_categories
 
 
@@ -303,7 +335,7 @@ def get_data_superproduct_selenium(browser, id_supermarket, id_product, url, dat
     return data
 
 
-def get_data_superproduct_beautifulsoup(soup, id_supermarket, id_product, url, date):
+def get_data_superproduct_beautifulsoup(soup):
     box_data = find_firts_element_by_class_beautifulsoup(soup, 'div', 'product-info-wrapper')
     if box_data == 'NA':
         box_data = find_by_class_beautifulsoup(soup, 'div', 'product-info-wrapper')
@@ -311,25 +343,25 @@ def get_data_superproduct_beautifulsoup(soup, id_supermarket, id_product, url, d
     # Get prices
     sale_price = find_firts_text_element_by_class_beautifulsoup(box_data, 'span', 'price-best')  
     sale_price = clear_price(sale_price)
+    if sale_price == '':
+        sale_price == 'NA'
     
     normal_price = find_text_by_class_beautifulsoup(box_data, 'span', 'product-sigle-price-wrapper')
     if normal_price == 'NA':
         normal_price = find_text_by_class_beautifulsoup(box_data, 'span', 'price-product-value')
     normal_price = clear_price(normal_price)
+    if normal_price == '':
+        normal_price == 'NA'
     
     # If the tag exists, the product is out of stock
     available = find_text_by_class_beautifulsoup(soup, 'span', 'no-stock-text')
-    if available == 'NA':
+    if available == 'NA' or available == '':
         stock = 'Yes'
     else:
         stock = 'No'
     
-    data = [str(id_supermarket),
-            str(id_product),
+    data = [str(sale_price),
             str(normal_price),
-            str(sale_price),
-            str(url),
-            str(date),
             str(stock)]
     return data
 
@@ -340,50 +372,122 @@ def create_row_error_product(url_product, category, id_supermarket, columns):
     return dataframe
 
 
+def execute_command_database(connection, cursor, query):
+    try:
+        cursor.execute(query)
+        connection.commit()
+        return True
+    except (Exception, psycopg2.Error) as error:
+        print("Error while connecting to PostgreSQL", error)
+        return False
+
+
+def insert_into_productos(connection, cursor, id_category, id_brand, id_type_product, name_product, image_product, description, ingredients):
+    query = """ INSERT INTO public.productos(
+            	categoria, marca, tipo_producto, nombre, imagen, descripcion, ingredientes)
+            	VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}'); """.format(id_category, id_brand, id_type_product, name_product, image_product, description, ingredients)
+    return execute_command_database(connection, cursor, query)
+
+
+def insert_into_marcas(connection, cursor, brand):
+    query = """ INSERT INTO public.marcas(
+            	marca)
+            	VALUES ('{}'); """.format(brand)
+    return execute_command_database(connection, cursor, query)
+
+
+def insert_into_tipos(connection, cursor, type_product):
+    query = """ INSERT INTO public.tipos(
+            	tipo)
+            	VALUES ('{}'); """.format(type_product)
+    return execute_command_database(connection, cursor, query)
+
+
+def insert_into_categorias(connection, cursor, category):
+    query = """ INSERT INTO public.categorias(
+            	categoria)
+            	VALUES ('{}'); """.format(category)
+    return execute_command_database(connection, cursor, query)
+    
+
+def insert_into_supermercados(connection, cursor, logo):
+    query = """ INSERT INTO public.supermercados(
+            	supermercado, logo)
+            	VALUES ('{}', '{}'); """.format(NAME_SUPERMARKET, logo)
+    return execute_command_database(connection, cursor, query)
+
+
+def insert_into_supermercados_productos(connection, cursor, id_supermarket, id_product, sale_price, normal_price, url_product, date_scrap, stock):
+    query = """ INSERT INTO public.supermercados_productos(
+            	id_supermercado, id_producto, precio_oferta, precio_normal, url_product, fecha, disponibilidad)
+            	VALUES ({}, {}, '{}', '{}', '{}', '{}', '{}'); """.format(id_supermarket, id_product, sale_price, normal_price, url_product, date_scrap, stock)
+    return execute_command_database(connection, cursor, query)
+
+
+def get_id_table(cursor, column_id, table_name, column_name, condition):
+    query = """ SELECT {} FROM {}
+                WHERE {} = '{}'""".format(column_id, table_name, column_name, condition)
+    try:
+        cursor.execute(query)
+        return cursor.fetchall()[0]
+    except:
+        return None
+    
+
+def exists_row_database(cursor, column_name, table_name, condition):
+    query = """ SELECT {} FROM {}
+                WHERE {} = '{}'""".format(column_name, table_name, column_name, condition)
+    try:
+        cursor.execute(query)
+        if len(cursor.fetchall()) > 0:
+            return True
+        else:
+            return False
+    except:
+        return None
+
+
+def exists_row_database_two_conditions(cursor, column_name1, column_name2, table_name, condition1, condition2):
+    query = """ SELECT {} FROM {}
+                WHERE {} = '{}' AND {} = '{}'""".format(column_name1, table_name, column_name1, condition1, column_name2, condition2)
+    try:
+        cursor.execute(query)
+        if len(cursor.fetchall()) > 0:
+            return True
+        else:
+            return False
+    except:
+        return None
+
+
+# Connect database
+connection = psycopg2.connect(user=DB_USER,
+                              password=DB_PASS,
+                              host=DB_HOST,
+                              port=DB_PORT,
+                              database=DB_DATABASE)
+cursor = connection.cursor()
+
 # MAIN
 date_scrap = date.today()
 total_products = 0
 
 # -- DataFrames --
 columns_category = ['id_category', 'category']
-columns_brand = ['id_brand', 'brand']
-columns_type = ['id_type', 'type']
-columns_product = ['id_product', 'category', 'brand', 'type_product', 'name', 'image_url', 'description', 'ingredients']
-columns_super_product = ['id_supermarket', 'id_product', 'normal_price', 'sale_price', 'url_product', 'date', 'available']
-columns_supermarket = ['id_supermarket', 'supermarket', 'logo_url']
 columns_error = ['url_product', 'category', 'id_supermarket']
-
-df_products = pd.DataFrame(columns=columns_product)
-df_categories = pd.DataFrame(columns=columns_category)
-df_type = pd.DataFrame(columns=columns_type)
-df_brand = pd.DataFrame(columns=columns_brand)
-df_super_product = pd.DataFrame(columns=columns_super_product)
-df_supermarket = pd.DataFrame(columns=columns_supermarket)
 df_error_products = pd.DataFrame(columns=columns_error)
 
-# Load dataframes if exists
-if exists(MAIN_PATH + '/Data/products.csv'):
-    df_products = pd.read_csv(MAIN_PATH + '/Data/products.csv')
-    
-if exists(MAIN_PATH + '/Data/type.csv'):
-    df_type = pd.read_csv(MAIN_PATH + '/Data/type.csv')
-    
-if exists(MAIN_PATH + '/Data/brand.csv'):
-    df_brand = pd.read_csv(MAIN_PATH + '/Data/brand.csv')
-    
-if exists(MAIN_PATH + '/Data/categories.csv'):
-    df_categories = pd.read_csv(MAIN_PATH + '/Data/categories.csv')
-    
-if exists(MAIN_PATH + '/Data/supermarketproduct.csv'):
-    df_super_product = pd.read_csv(MAIN_PATH + '/Data/supermarketproduct.csv')
-    
-if exists(MAIN_PATH + '/Data/supermarket.csv'):
-    df_supermarket = pd.read_csv(MAIN_PATH + '/Data/supermarket.csv')
-    
+# Read data and insert into to dataframe
+df_products = sqlio.read_sql_query('SELECT * FROM productos', connection)
+df_type = sqlio.read_sql_query('SELECT * FROM tipos', connection)
+df_brand = sqlio.read_sql_query('SELECT * FROM marcas', connection)
+df_categories = sqlio.read_sql_query('SELECT * FROM categorias', connection)
+df_super_product = sqlio.read_sql_query('SELECT * FROM supermercados_productos', connection)
+df_supermarket = sqlio.read_sql_query('SELECT * FROM supermercados', connection)
 if exists(MAIN_PATH + '/Data/error_products.csv'):
     df_error_products = pd.read_csv(MAIN_PATH + '/Data/error_products.csv')
 
-# Connect to main website
+# Try to connect to main website
 while True:
     try:
         driver = webdriver.Chrome(MAIN_PATH + '/chromedriver.exe')
@@ -392,6 +496,7 @@ while True:
         sleep(1)
         break
     except:
+        sleep(10)
         pass
 
 # Hover mouse in the Navbar
@@ -403,34 +508,38 @@ hover.perform()
 soup = BeautifulSoup(driver.page_source, 'lxml')
 
 # Data supermarket
-if exists_row_dataframe(df_supermarket, 'supermarket', NAME_SUPERMARKET) == False:
-    url_logo = 'https://upload.wikimedia.org/wikipedia/commons/d/d3/Logo_Jumbo_Cencosud.png'
-    data = [len(df_supermarket), NAME_SUPERMARKET, url_logo]
-    row = pd.DataFrame(data=[data], columns=columns_supermarket)
-    df_supermarket = pd.concat([df_supermarket, row], ignore_index=True)
-id_supermarket = get_id_dataframe(df_supermarket, 'supermarket', 'id_supermarket', NAME_SUPERMARKET)
+if exists_row_database(cursor, 'supermercado', 'supermercados', NAME_SUPERMARKET) == False:
+    # Insert database
+    url_logo = 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Logo_Santa_Isabel_Cencosud_transparente.svg/1200px-Logo_Santa_Isabel_Cencosud_transparente.svg.png'
+    if insert_into_supermercados(connection, cursor, url_logo):
+        flag_supermarket = True
+    else:
+        flag_supermarket = False
+id_supermarket = get_id_table(cursor, 'id_supermercado', 'supermercados', 'supermercado', NAME_SUPERMARKET)[0]
 
 # Get all categories data
 categories_supermarket = soup.find_all('a', class_ = 'new-header-supermarket-dropdown-item-name')
 categories_navbar = soup.find_all('a', class_ = 'new-header-supermarket-title')
 categories = categories_supermarket + categories_navbar
-df_categories = get_data_categories(df_categories, categories)
+df_categories = get_data_categories(connection, cursor, df_categories, categories)
 
 # Get all urls from categories
 list_url_categories = get_all_url_from_elements(categories)
 
 # Create a dataframe for this supermarket
 df_categories_supermarket = pd.DataFrame(columns=columns_category)
-df_categories_supermarket = get_data_categories(df_categories_supermarket, categories)
+df_categories_supermarket = get_data_categories_supermarket(connection, df_categories_supermarket, categories)
 
 # Browse all categories
 for i in range(len(list_url_categories)):
+    # Try to connect in category page
     while True:
         try:
             driver.get(list_url_categories[i])
             sleep(5)
             break
         except:
+            sleep(10)
             pass
     soup = BeautifulSoup(driver.page_source, 'lxml')
     print('{} - {}:'.format(df_categories_supermarket['category'][i], list_url_categories[i]))
@@ -440,86 +549,98 @@ for i in range(len(list_url_categories)):
     
     cont_products_category = 0
     total_products_category = len(list_url_products)
+    id_category = get_id_table(cursor, 'id_categoria', 'categorias', 'categoria', df_categories_supermarket['category'][i])[0]
+    
+    # Get data for all products from category
     for url_product in list_url_products:
-        # Connect to product details
+        # Try to connect to product details
         while True:
             try:
                 driver.get(url_product)
                 sleep(1)
                 break
             except:
+                sleep(10)
                 pass
-                
         soup = BeautifulSoup(driver.page_source, 'lxml')
-               
-        # Add to dataframe if doesn't exists and get its id
-        brand_product = (find_text_by_class_beautifulsoup(soup, 'a', 'product-brand')).upper()
-        if brand_product == '':
-            brand_product = 'NA'
         
-        type_product = 'NA'
-        element_type = find_text_by_class_beautifulsoup(soup, 'span', 'technical-information-flags-title')
-        if element_type == 'Tipo de Producto':
-            type_product = (find_text_by_class_beautifulsoup(soup, 'span', 'technical-information-flags-value')).upper()
-            if type_product == '':
-                type_product = 'NA'
-               
-        # Get brand and add to dataframe is not exists
-        if exists_row_dataframe(df_brand, 'brand', brand_product) == False:
-            row = pd.DataFrame(data=[[len(df_brand), brand_product]], columns=columns_brand)
-            df_brand = pd.concat([df_brand, row], ignore_index=True)
-        
-        # Get type of product and add to dataframe is not exists
-        if exists_row_dataframe(df_type, 'type', type_product) == False:
-            row = pd.DataFrame(data=[[len(df_type), type_product]], columns=columns_type)
-            df_type = pd.concat([df_type, row], ignore_index=True)
-        
-        # Get ids
-        id_brand = get_id_dataframe(df_brand, 'brand', 'id_brand', brand_product)
-        id_type = get_id_dataframe(df_type, 'type', 'id_type', type_product)
-        id_supermarket = get_id_dataframe(df_supermarket, 'supermarket', 'id_supermarket', NAME_SUPERMARKET)
-        id_category = get_id_dataframe(df_categories, 'category', 'id_category', df_categories_supermarket['category'][i])
-        id_product = len(df_products)
+        # Try to get data from product
+        attemps = 0
+        while attemps < 3:
+            # Add to database if doesn't exists and get its id
+            brand_product = clear_text((find_text_by_class_beautifulsoup(soup, 'a', 'product-brand')).upper())
+            if brand_product != '' and exists_row_database(cursor, 'marca', 'marcas', brand_product) == False:
+                if insert_into_marcas(connection, cursor, brand_product) == True:
+                    flag_brand = True
+            else:
+                flag_brand = False
+            id_brand = get_id_table(cursor, 'id_marca', 'marcas', 'marca', brand_product)[0]
+            
+            # Search type of product if exists
+            type_product = 'NA'
+            list_features = find_all_by_class_beautifulsoup(soup, 'div', 'technical-information-flags-container')
+            for item in list_features:
+                try:
+                    if item.find('span', class_ = 'technical-information-flags-title-container').text == 'Tipo de Producto':
+                        type_product = clear_text((item.find('span', class_ = 'technical-information-flags-value-container').text).upper())
+                except:
+                    try:
+                        if item.find('span', class_ = 'technical-information-flags-title').text == 'Tipo de Producto':
+                            type_product = clear_text((item.find('span', 'technical-information-flags-value').text).upper())
+                    except:
+                        type_product = 'NA'
+
+            # Add to database if doesn't exists and get its id
+            if type_product != '' and exists_row_database(cursor, 'tipo', 'tipos', type_product) == False:
+                if insert_into_tipos(connection, cursor, type_product) == True:
+                    flag_type = True
+            else:
+                flag_type = False
+            id_type = get_id_table(cursor, 'id_tipo', 'tipos', 'tipo', type_product)[0]
+            
+            data_product = get_data_product_beautifulsoup(soup)
+            if data_product == 'Error read':
+                attemps += 1
+                # Reload page
+                while True:
+                    try:
+                        driver.get(url_product)
+                        sleep(3)
+                        soup = BeautifulSoup(driver.page_source, 'lxml')
+                        break
+                    except:
+                        sleep(10)
+                        pass
+            elif data_product == 'NA':
+                break
+            else:
+                break
         
         # Get product details
-        data_product = get_data_product_beautifulsoup(soup, id_category, id_brand, id_type, id_product)
         if data_product == 'NA':
             tmp_df = create_row_error_product(url_product, df_categories_supermarket['category'][i], id_supermarket, columns_error)
             df_error_products = pd.concat([df_error_products, tmp_df], ignore_index=True)
             cont_products_category += 1
-            continue     
-        # Add product if doesn't exists in dataframe
-        elif exists_row_dataframe(df_products, 'name', data_product[4]) == False:
-            df_new_row = pd.DataFrame(data=[data_product], columns=columns_product)
-            df_products = pd.concat([df_products, df_new_row], ignore_index=True)
+            continue
         
-        # Add supermarket_product if doesn't exists in dataframe
-        if exists_superproduct(df_super_product, id_supermarket, id_product, date_scrap) == False:
-            data_superproduct = get_data_superproduct_beautifulsoup(soup, id_supermarket, id_product, url_product, date_scrap)
-            df_new_row = pd.DataFrame(data=[data_superproduct], columns=columns_super_product)
-            df_super_product = pd.concat([df_super_product, df_new_row], ignore_index=True)
+        # Add product if doesn't exists in database
+        if exists_row_database(cursor, 'nombre', 'productos', data_product[0]) == False:
+            if insert_into_productos(connection, cursor, id_category, id_brand, id_type, data_product[0], data_product[1], data_product[2], data_product[3]) == True:
+                flag_product = True
+        else:
+            print('[{}/{}] > Product already exists - {}'.format(cont_products_category, total_products_category, data_product[0]))
+            flag_product = False
+        
+        # Add supermarket_product if doesn't exists in database
+        id_product = get_id_table(cursor, 'id_producto', 'productos', 'nombre', data_product[0])[0]
+        if exists_row_database_two_conditions(cursor, 'id_producto', 'id_supermercado', 'supermercados_productos', id_product, id_supermarket) == False:
+            data_superproduct = get_data_superproduct_beautifulsoup(soup)
+            if insert_into_supermercados_productos(connection, cursor, id_supermarket, id_product, data_superproduct[0], data_superproduct[1], url_product, date_scrap, data_superproduct[2]) == True:
+                flag_superproduct = True
+            else:
+                flag_superproduct = False
         
         total_products += 1
         cont_products_category += 1
-        print('[{}/{}] > {} - ${} < ${}'.format(cont_products_category, total_products_category, data_product[4], data_superproduct[3], data_superproduct[2]))
-        
-        if total_products % 100 == 0:
-            # Save DataFrame to .csv
-            save_data_csv(df_products, 'Data/products', columns_product)
-            save_data_csv(df_categories, 'Data/categories', columns_category)
-            save_data_csv(df_type, 'Data/type', columns_type)
-            save_data_csv(df_brand, 'Data/brand', columns_brand)
-            save_data_csv(df_super_product, 'Data/supermarketproduct', columns_super_product)
-            save_data_csv(df_supermarket, 'Data/supermarket', columns_supermarket)
-            save_data_csv(df_error_products, 'Data/error_products', columns_error)
-        
+        print('[{}/{}] > {} - ${} > ${}'.format(cont_products_category, total_products_category, data_product[0], data_superproduct[1], data_superproduct[0]))          
 print('Total products from {}: {}'.format(NAME_SUPERMARKET, total_products))
-
-# Save DataFrame to .csv
-save_data_csv(df_products, 'Data/products', columns_product)
-save_data_csv(df_categories, 'Data/categories', columns_category)
-save_data_csv(df_type, 'Data/type', columns_type)
-save_data_csv(df_brand, 'Data/brand', columns_brand)
-save_data_csv(df_super_product, 'Data/supermarketproduct', columns_super_product)
-save_data_csv(df_supermarket, 'Data/supermarket', columns_supermarket)
-save_data_csv(df_error_products, 'Data/error_products', columns_error)

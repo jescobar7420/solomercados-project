@@ -1,26 +1,27 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const pool = require('../connect_database');
-const GetListProductos = (req, res) => {
-    let ListProductos = new Array();
+const GetListProductosCategoria = (req, res) => {
+    const id = parseInt(req.params.id);
+    let ListProductosCategoria = new Array();
     let query = `SELECT p.id_producto, c.categoria, m.marca, REPLACE(t.tipo, 'NA', c.categoria) AS tipo_producto, p.nombre, p.imagen, p.descripcion, p.ingredientes
                  FROM productos AS p
                  JOIN categorias AS c ON c.id_categoria = p.categoria
                  JOIN marcas AS m ON m.id_marca = p.marca
                  JOIN tipos AS t ON t.id_tipo = p.tipo_producto
-                 WHERE p.nombre <> 'NA'`;
-    pool.query(query, (err, respuesta) => {
+                 WHERE p.nombre <> 'NA' AND c.id_categoria = $1`;
+    pool.query(query, [id], (err, respuesta) => {
         if (err) {
             console.log(err);
             return;
         }
         for (let row of respuesta.rows) {
-            ListProductos.push(row);
+            ListProductosCategoria.push(row);
         }
-        console.log(ListProductos);
-        res.send(JSON.stringify({ "satus": "ok", "items": ListProductos }));
+        console.log(ListProductosCategoria);
+        res.send(JSON.stringify({ "satus": "ok", "items": ListProductosCategoria }));
     });
 };
 module.exports = {
-    GetListProductos
+    GetListProductosCategoria
 };
