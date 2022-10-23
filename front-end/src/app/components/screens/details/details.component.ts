@@ -37,8 +37,6 @@ export class DetailsComponent implements OnInit {
     if (ingredients == 'No disponible') {
       return false
     }
-    else {
-      return true
-    }
+    return true
   }
 }

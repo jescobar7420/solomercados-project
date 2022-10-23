@@ -32,4 +32,8 @@ export class ProductosService {
   GetListProductsCategory(id:number):Observable<any> {
     return this.http.get(`${environment.hostname}/ProductosCategoria/${id}`);
   }
+  
+  GetListProductsBestPrice():Observable<any> {
+    return this.http.get(`${environment.hostname}/ListProductsBestPrice`);
+  }
 }

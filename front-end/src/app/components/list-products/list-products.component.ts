@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductosService } from 'src/app/services/productos.service';
-import { Product } from 'src/app/interfaces/product';
+import { ProductBestPrice } from 'src/app/interfaces/product-best-price';
 
 @Component({
   selector: 'app-list-products',
@@ -9,16 +9,26 @@ import { Product } from 'src/app/interfaces/product';
 })
 export class ListProductsComponent implements OnInit {
 
-  ListaProductos = new Array<Product>();
+  ListaProductos = new Array<ProductBestPrice>();
 
-  constructor(private http:ProductosService) { }
+  constructor(private http:ProductosService) {}
 
   ngOnInit(): void {
-    this.http.GetListProductos().subscribe(datos => {
+    this.http.GetListProductsBestPrice().subscribe(datos => {
       for(let i=0; i<datos.items.length && i<40; i++) {
         this.ListaProductos.push(datos.items[i]);
       }
     })
   }
 
+  product_on_offer(precio_oferta:string) {
+    if (precio_oferta == '999999999') {
+      return false;
+    }
+    return true;
+  }
+  
+  numberWithPoints(precio:string) {
+    return precio.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  }
 }
