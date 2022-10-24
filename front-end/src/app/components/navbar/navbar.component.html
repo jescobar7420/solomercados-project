@@ -1,35 +1,36 @@
-<nav class="navbar">
+<nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/">
-            <p style="color: #FFFFFF">SOLO<span style="color: #FF6F1E">MERCADOS</span></p>
-        </a>
-
-        <form class="d-flex" role="search">
-            <input id="input_search" class="form-control me-1" type="search" placeholder="Busque aquí el producto que desee..." aria-label="Search">
-            <button class="btn btn-outline-light" type="submit" [routerLink]="['/buscar']" routerLinkActive="router-link-active" ><mat-icon id="icon_search">search</mat-icon></button>
-        </form> 
-        
-        <div class="nav-bar">
-            <ul class="nav navbar-nav navbar-right">
-                <li>
-                    <button class="btn btn-outline-light" type="submit" [routerLink]="['/cart']" routerLinkActive="router-link-active" ><mat-icon id="carrito">add_shopping_cart</mat-icon></button>
-                    <button class="btn btn-outline-light" type="submit" [routerLink]="['/login']" routerLinkActive="router-link-active" ><mat-icon id="login">account_circle</mat-icon></button>
-                    <div class="dropdown">
-                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                            <mat-icon id="list">list</mat-icon>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                          <li *ngFor="let categoria of ListaCategorias">
-                            <a class="dropdown-item" href="{{categoria.id_categoria}}" [routerLink]="['/categoria', categoria.id_categoria]">{{categoria.categoria}}</a>
-                          </li>
-                        </ul>
+        <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+            <a class="navbar-brand" href="/">
+                <span style="color: #FFFFFF">SOLO</span><span style="color: #FF6F1E">MERCADOS</span>
+            </a>
+        </div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="btn btn-outline-light" href="#" role="button" aria-expanded="false" [routerLink]="['/filter']" routerLinkActive="router-link-active"><mat-icon>filter_list</mat-icon></a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-outline-light" href="#" role="button" aria-expanded="false" [routerLink]="['/cart']" routerLinkActive="router-link-active"><mat-icon id="cart">add_shopping_cart</mat-icon></a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="btn btn-outline-light dropdown-toggle" href="#" role="button" data-display="static" data-bs-toggle="dropdown" aria-expanded="false"><mat-icon id="login">account_circle</mat-icon></a>
+                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg-left" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="#">Iniciar sesión</a>
+                        <a class="dropdown-item" href="#">Registrarse</a>
                     </div>
+                </li>
+                <li class="nav-item">
+                    <form class="d-flex" role="search">
+                        <input class="form-control" type="search" placeholder="Busque aquí el producto que desee..." aria-label="Search">
+                        <a class="btn btn-light" href="#" role="button" aria-expanded="false" [routerLink]="['/buscar']" routerLinkActive="router-link-active"><mat-icon id="icon_search">search</mat-icon></a>
+                    </form>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
-
-
-
-
