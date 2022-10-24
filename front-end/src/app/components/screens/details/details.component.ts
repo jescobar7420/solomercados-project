@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ProductosService } from 'src/app/services/productos.service';
 import { SupermercadosProductosService } from 'src/app/services/supermercados-productos.service';
 import { SupermercadosProductos } from 'src/app/interfaces/supermercados-productos';
+import { Product } from 'src/app/interfaces/product';
 
 @Component({
   selector: 'app-details',
@@ -12,13 +13,24 @@ import { SupermercadosProductos } from 'src/app/interfaces/supermercados-product
 export class DetailsComponent implements OnInit {
 
   id_producto:any;
-  Producto:any;
+  Producto:Product;
   ListaSuperProducto = new Array<SupermercadosProductos>();
 
   constructor(private route: ActivatedRoute, private httpProduct:ProductosService, private httpSuperProduct:SupermercadosProductosService) { 
     this.route.params.subscribe(datos => {
       this.id_producto = datos["id"]
     })
+    
+    this.Producto = {
+      id_producto: 0,
+      categoria: '',
+      marca: '',
+      tipo_producto: '',
+      nombre: '',
+      imagen: '',
+      descripcion: '',
+      ingredientes: ''
+    }
   }
 
   ngOnInit(): void {
@@ -38,5 +50,12 @@ export class DetailsComponent implements OnInit {
       return false
     }
     return true
+  }
+  
+  numberWithPoints(precio:string) {
+    if (precio != '-') {
+      return '$ ' + precio.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return '-'
   }
 }
