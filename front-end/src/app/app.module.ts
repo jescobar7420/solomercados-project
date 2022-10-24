@@ -13,6 +13,7 @@ import { DetailsComponent } from './components/screens/details/details.component
 import { LoginComponent } from './components/screens/login/login.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FilterComponent } from './components/filter/filter.component';
+import { FooterComponent } from './components/footer/footer.component';
 
 
 @NgModule({
@@ -25,6 +26,7 @@ import { FilterComponent } from './components/filter/filter.component';
     DetailsComponent,
     LoginComponent,
     FilterComponent,
+    FooterComponent,
   ],
   imports: [
     BrowserModule,
