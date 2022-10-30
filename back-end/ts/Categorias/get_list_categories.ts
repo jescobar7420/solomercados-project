@@ -4,9 +4,9 @@ const pool = require('../connect_database');
 
 const GetListCategorias = (req:any, res:any) => {
     let ListaCategorias = new Array<Categorias>();
-    let query = `SELECT id_categoria, categoria FROM categorias
-                 WHERE categoria <> 'NA'
-                 ORDER BY categoria ASC`
+    let query = `SELECT DISTINCT id_categoria, categoria 
+                 FROM categorias
+                 ORDER BY categorias.categoria ASC`
     pool.query(query, (err:any, respuesta:any) => {
         if(err) {
             console.log(err);

@@ -78,7 +78,6 @@
             </form>
         </div>
         
-        
         <div class="submitted-message" *ngIf="form_reg.submitted && flag_register == false">
             <p>¡Te has registrado con éxito! Bienvenido {{Usuario.nombre}}</p>
         </div>
@@ -87,12 +86,12 @@
             <p>¡El email ingresado ya se encuentra en el sistema!</p>
         </div>
         
-        <div class="submitted-message" *ngIf="form_log.submitted && flag_login == false">
-            <p>¡Email o contraseña incorrecta!</p>
+        <div class="submitted-message" *ngIf="form_log.submitted && isLoggedIn() == true">
+            <p>¡Bienvenido {{Usuario.nombre}}!</p>
         </div>
         
-        <div class="submitted-message" *ngIf="form_log.submitted && flag_login == true">
-            <p>¡Bienvenido {{Usuario.nombre}}!</p>
+        <div class="submitted-message" *ngIf="form_log.submitted && isLoggedIn() == false">
+            <p>¡Email o contraseña incorrecta!</p>
         </div>
         
     </div>

@@ -15,7 +15,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FilterComponent } from './components/filter/filter.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { JwtService } from './services/jwt.service';
+import { LoginService } from './services/login.service';
 
 
 @NgModule({
@@ -38,7 +38,7 @@ import { JwtService } from './services/jwt.service';
     HttpClientModule,
     ReactiveFormsModule
   ],
-  providers: [JwtService],
+  providers: [LoginService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -17,7 +17,7 @@
                 <li class="nav-item">
                     <a class="btn btn-outline-light" href="#" role="button" aria-expanded="false" [routerLink]="['/cart']" routerLinkActive="router-link-active"><mat-icon id="cart">add_shopping_cart</mat-icon></a>
                 </li>
-                <li class="nav-item dropdown">
+                <li class="nav-item dropdown" *ngIf="isLoggedIn() == false">
                     <a class="btn btn-outline-light" href="/login" role="button" data-display="static"  aria-expanded="false"><mat-icon id="login">account_circle</mat-icon></a>
                     <!-- <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg-left" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="#">Iniciar sesión</a>

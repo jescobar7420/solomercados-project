@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductosService } from 'src/app/services/productos.service';
-import { CategoriasService } from 'src/app/services/categorias.service';
-import { Product } from 'src/app/interfaces/product';
+import { ProductBestPrice } from 'src/app/interfaces/product-best-price';
+import { FilterService } from 'src/app/services/filter.service';
 import { Categorias } from 'src/app/interfaces/categorias';
-import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-filter',
@@ -12,26 +11,40 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class FilterComponent implements OnInit {
 
-  id_category:any;
-  ListaProductos = new Array<Product>();
-  Categoria:any;
+  ListaProductos = new Array<ProductBestPrice>();
+  ListCategorias = new Array<Categorias>();
 
-  constructor(private route: ActivatedRoute, private httpProducts:ProductosService, private httpCategory:CategoriasService) { 
-    this.route.params.subscribe(datos => {
-      this.id_category = datos["id"]
-    })
-  }
+  constructor(private http_product:ProductosService,
+              private http_filter:FilterService) {}
 
   ngOnInit(): void {
-    this.httpProducts.GetListProductsCategory(this.id_category).subscribe(datos => {
+    this.http_product.GetListProductsBestPrice().subscribe(datos => {
       for(let i=0; i<datos.items.length && i<40; i++) {
         this.ListaProductos.push(datos.items[i]);
       }
     })
     
-    this.httpCategory.GetCategory(this.id_category).subscribe(datos => {
-      this.Categoria = datos[0];
+    this.http_filter.GetCategories().subscribe(datos => {
+      for(let i=0; i<datos.items.length; i++) {
+        this.ListCategorias.push(datos.items[i]);
+      }
     })
   }
 
+  product_on_offer(precio_oferta:string) {
+    if (precio_oferta == '999999999') {
+      return false;
+    }
+    return true;
+  }
+  
+  numberWithPoints(precio:string) {
+    return precio.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  }
+
+  selectCategory(id:any) {
+    console.log(id)
+  }
+  
+  
 }

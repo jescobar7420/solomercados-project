@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoginService } from 'src/app/services/login.service';
 import { Usuario } from 'src/app/interfaces/usuario';
 import { map } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -49,13 +50,13 @@ export class LoginComponent implements OnInit {
     })
   }
   
-  onSubmitRegister() {
+  async onSubmitRegister() {
     if (this.form_register.valid && this.form_register.get('email_r')?.valid) {
       const nombre = this.form_register.get('nombre')?.value;
       const password = this.form_register.get('password_r')?.value;
       const email = this.form_register.get('email_r')?.value;
       
-      this.http.GetUsuario(email).subscribe(datos => {
+      await this.http.GetUsuario(email).subscribe(datos => {
         if(typeof(datos[0]) === 'undefined') {
           this.flag_register = false;
           this.http.PostUsuario(nombre, password, email).subscribe();
@@ -71,10 +72,17 @@ export class LoginComponent implements OnInit {
     if (this.form_login.valid && this.form_login.get('email_l')?.valid) {
       const email = this.form_login.get('email_l')?.value;
       const password = this.form_login.get('password_l')?.value;
-           
-      const request = await this.http.PostLogin(email, password).subscribe();
-      console.log(request)
-      
+        
+      await this.http.PostLogin(email, password);
+        
+      if (this.http.isLoggedIn) {
+        this.Usuario = this.http.currentUser;
+      }
     }
   }
+
+  isLoggedIn():boolean {
+    return this.http.isLoggedIn;
+  }
+  
 }

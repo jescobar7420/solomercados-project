@@ -490,7 +490,7 @@ if exists(MAIN_PATH + '/Data/error_products.csv'):
 # Try to connect to main website
 while True:
     try:
-        driver = webdriver.Chrome(MAIN_PATH + '/chromedriver.exe')
+        driver = webdriver.Chrome(MAIN_PATH + '/chromedriver2.exe')
         driver.set_window_size(1280, 720)
         driver.get(MAIN_URL)
         sleep(1)

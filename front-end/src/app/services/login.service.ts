@@ -12,7 +12,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 export class LoginService {
 
   currentUser:Usuario = {
-    id_usuario: 0,
+    id_usuario: -1,
     nombre: '',
     email: '',
   };
@@ -42,31 +42,46 @@ export class LoginService {
     return this.http.post(`${environment.hostname}/InsertarUsuario`, JSON.stringify({"nombre": nombre, "password": password, "email": email}), this.HttpUploadOptions);
   }
   
-  PostLogin(email:string, password:string):Observable<any> {
-    return this.http.post(`${environment.hostname}/Login`, JSON.stringify({"email": email, "password": password}), this.HttpUploadOptions).pipe(
-      map((response:any) => {
+  async PostLogin(email:string, password:string){
+    const url = `${environment.hostname}/Login`
+      try{
+        var request = await fetch(url, {
+          mode: 'cors',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          'body': JSON.stringify({"email": email, "password": password})
+        });    
         
-        const decodedToken = this.helper.decodeToken(response.token);
+        let body = await request.json()
+        
+        if (request.status == 400) {
+          console.log(body.mensaje)
+          return 
+        }
+        
+        const decodedToken = this.helper.decodeToken(body.token);
 
         this.currentUser.nombre = decodedToken.data.nombre;
         this.currentUser.email = decodedToken.data.email;
         this.currentUser.id_usuario = decodedToken.data.id_usuario;
+        this.isLoggedIn = true;
+        localStorage.setItem('token', body.token);
         
-        localStorage.setItem('token', response.token);
-
-        return this.currentUser;
-      })
-    );
+        return this.currentUser
+      } catch(error) {
+        console.log('error fetch', error)
+        return
+      }  
   }
-  
-
 
   logout() {
     localStorage.removeItem('token');
   }
   
   loggedIn():any {
-    const token =  JSON.parse(localStorage.getItem('token') || '{}');
+    const token =  localStorage.getItem('token') ?? '';
     return !this.helper.isTokenExpired(token);
   }
 }
