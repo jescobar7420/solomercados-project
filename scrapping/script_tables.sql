@@ -55,3 +55,12 @@ CREATE TABLE supermercados_productos (
     CONSTRAINT fk_supermercados_productos_productos FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
     ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+
+CREATE TABLE usuarios (
+    id_usuario SERIAL NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    email VARCHAR(30) NOT NULL,
+    CONSTRAINT pk_usuarios PRIMARY KEY (id_usuario)
+);

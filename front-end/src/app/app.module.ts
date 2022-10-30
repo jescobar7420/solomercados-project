@@ -14,6 +14,8 @@ import { LoginComponent } from './components/screens/login/login.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FilterComponent } from './components/filter/filter.component';
 import { FooterComponent } from './components/footer/footer.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { JwtService } from './services/jwt.service';
 
 
 @NgModule({
@@ -33,9 +35,10 @@ import { FooterComponent } from './components/footer/footer.component';
     AppRoutingModule,
     BrowserAnimationsModule,
     MaterialModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
-  providers: [],
+  providers: [JwtService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
