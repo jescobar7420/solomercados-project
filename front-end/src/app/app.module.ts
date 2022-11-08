@@ -14,8 +14,11 @@ import { LoginComponent } from './components/screens/login/login.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FilterComponent } from './components/filter/filter.component';
 import { FooterComponent } from './components/footer/footer.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoginService } from './services/login.service';
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
+import { FilterPipe } from './pipes/filter.pipe';
+import { HighlightDirective } from './directives/highlight.directive';
 
 
 @NgModule({
@@ -29,6 +32,8 @@ import { LoginService } from './services/login.service';
     LoginComponent,
     FilterComponent,
     FooterComponent,
+    FilterPipe,
+    HighlightDirective
   ],
   imports: [
     BrowserModule,
@@ -36,7 +41,9 @@ import { LoginService } from './services/login.service';
     BrowserAnimationsModule,
     MaterialModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule, 
+    Ng2SearchPipeModule,
+    FormsModule
   ],
   providers: [LoginService],
   bootstrap: [AppComponent]

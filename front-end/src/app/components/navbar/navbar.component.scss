@@ -4,6 +4,7 @@ nav {
     top: 0px;
     display: flex;
     background: #2D5C88;
+    position: relative;
 }
 
 .btn-outline-light {
@@ -36,4 +37,31 @@ input {
 
 .collapse {
     margin-top: 5px;
+}
+
+.form-group {
+    position: relative;
+}
+
+.search {
+    position: relative;
+}
+
+li {
+    list-style-type: none;
+    cursor: pointer;
+}
+
+.list-group li:hover {
+    background-color: #435a60;
+    color: white;
+}
+
+ul.list-group {
+    margin-top: 0;
+    padding-left: 0;
+    position: absolute;
+    z-index: 999;
+    max-height: 300px;
+    overflow-y: auto;
 }

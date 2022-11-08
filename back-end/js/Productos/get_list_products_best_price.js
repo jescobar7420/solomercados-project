@@ -15,7 +15,8 @@ const GetListProductsBestPrice = (req, res) => {
                  WHERE p.nombre <> 'NA' AND 
                     p.nombre <> 'E' AND
                     sp.precio_normal <> 'NA' 
-                 GROUP BY p.id_producto, m.marca, p.nombre, p.imagen`;
+                 GROUP BY p.id_producto, m.marca, p.nombre, p.imagen
+                 LIMIT 40`;
     pool.query(query, (err, respuesta) => {
         if (err) {
             console.log(err);

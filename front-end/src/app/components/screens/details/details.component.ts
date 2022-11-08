@@ -15,6 +15,7 @@ export class DetailsComponent implements OnInit {
   id_producto:any;
   Producto:Product;
   ListaSuperProducto = new Array<SupermercadosProductos>();
+  flag_alert:boolean = false;
 
   constructor(private route: ActivatedRoute, private httpProduct:ProductosService, private httpSuperProduct:SupermercadosProductosService) { 
     this.route.params.subscribe(datos => {
@@ -57,5 +58,28 @@ export class DetailsComponent implements OnInit {
       return '$ ' + precio.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
     return '-'
+  }
+  
+  delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+  }
+  
+  async add_product_cart(id_producto:number, nombre:string, marca:string, imagen:string) {
+    let products = JSON.parse(localStorage.getItem('cart')!)|| [];
+    
+    for(let i=0; i<products.length; i++) {
+      if(products[i]['id_producto'] == id_producto) {
+        products[i]['multiplicador'] = products[i]['multiplicador'] + 1;
+        localStorage.setItem('cart', JSON.stringify(products));
+        
+        this.flag_alert = true;
+        await this.delay(3000);
+        this.flag_alert = false;
+        return
+      }
+    }
+    
+    products.push({id_producto: id_producto, nombre: nombre, marca: marca, imagen: imagen, multiplicador: 1});
+    localStorage.setItem('cart', JSON.stringify(products));
   }
 }

@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
         <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
-            <a class="navbar-brand" href="/">
+            <a class="navbar-brand" href="/" (click)="clear_search()">
                 <span style="color: #FFFFFF">SOLO</span><span style="color: #FF6F1E">MERCADOS</span>
             </a>
         </div>
@@ -12,23 +12,33 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="btn btn-outline-light" href="#" role="button" aria-expanded="false" [routerLink]="['/filter']" routerLinkActive="router-link-active"><mat-icon>filter_list</mat-icon></a>
+                    <a class="btn btn-outline-light" href="#" role="button" aria-expanded="false" [routerLink]="['/filter']" routerLinkActive="router-link-active" (click)="clear_search()"><mat-icon>filter_list</mat-icon></a>
                 </li>
                 <li class="nav-item">
-                    <a class="btn btn-outline-light" href="#" role="button" aria-expanded="false" [routerLink]="['/cart']" routerLinkActive="router-link-active"><mat-icon id="cart">add_shopping_cart</mat-icon></a>
+                    <a class="btn btn-outline-light" href="#" role="button" aria-expanded="false" [routerLink]="['/cart']" routerLinkActive="router-link-active" (click)="clear_search()"><mat-icon id="cart">add_shopping_cart</mat-icon></a>
                 </li>
-                <li class="nav-item dropdown" *ngIf="isLoggedIn() == false">
-                    <a class="btn btn-outline-light" href="/login" role="button" data-display="static"  aria-expanded="false"><mat-icon id="login">account_circle</mat-icon></a>
-                    <!-- <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg-left" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Iniciar sesión</a>
-                        <a class="dropdown-item" href="#">Registrarse</a>
-                    </div> -->
+                <li class="nav-item dropdown">
+                    <a class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown" role="button" data-display="static"  aria-expanded="false" (click)="clear_search()"><mat-icon id="login">account_circle</mat-icon></a>
+                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg-left" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" *ngIf="isLoggedIn()">Bienvenido {{current_user.nombre}}</a>
+                        <a class="dropdown-item" href="/login" *ngIf="!isLoggedIn()">Iniciar sesión</a>
+                        <div *ngIf="isLoggedIn()">
+                            <a class="dropdown-item">Historial</a>
+                            <hr>
+                            <a class="dropdown-item" (click)="logout()">Cerrar sesión</a>
+                        </div>
+                    </div>
                 </li>
                 <li class="nav-item">
                     <form class="d-flex" role="search">
-                        <input class="form-control" type="search" placeholder="Busque aquí el producto que desee..." aria-label="Search">
-                        <a class="btn btn-light" href="#" role="button" aria-expanded="false" [routerLink]="['/buscar']" routerLinkActive="router-link-active"><mat-icon id="icon_search">search</mat-icon></a>
+                        <input class="form-control" type="search" placeholder="Busque aquí el producto que desee..." aria-label="Search" id="search">
+                        <a class="btn btn-light" role="button" aria-expanded="false" (click)="search_product()"><mat-icon id="icon_search">search</mat-icon></a>
                     </form>
+                    <ul class="list-group list-group-flush" [hidden]="!showList">
+                        <li class="list-group-item py-1" *ngFor="let producto of Productos" [routerLink]="['/details', producto.id_producto]" routerLinkActive="router-link-active" (click)="clear_search()">
+                            <a>{{producto.nombre}}</a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </div>

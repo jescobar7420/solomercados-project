@@ -5,6 +5,14 @@
     cursor: pointer;
 }
 
+.right-side {
+    min-width: 340px;
+}
+
+.left-side {
+    position: relative;
+}
+
 img {
     width: 140px;
     height: 140px;
@@ -62,19 +70,35 @@ span {
     margin-bottom: 6px;
 }
 
-.form-range::-webkit-slider-thumb {
-    background: #2D5C88;
-}
-  
-.form-range::-moz-range-thumb {
-    background: #2D5C88;
-}
-  
-.form-range::-ms-thumb {
-    background: #2D5C88;
-}
-
 .list-products {
     padding-top: 0.71rem!important;
     padding-bottom: 0.5rem!important;
+    min-height: 100%;
+}
+
+.aler-product {
+    padding-top: 23%;
+    padding-bottom: 22%;
+}
+
+.filter-button {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.pagination-products {
+    margin-top: 1rem;
+    font-family: 'Arial';
+    font-style: normal;
+    font-weight: bold;
+}
+
+.alert-container {
+    position: absolute;
+    width: 25%;
+    min-width: 350px;
+}
+
+.container-fluid {
+    position: relative;
 }

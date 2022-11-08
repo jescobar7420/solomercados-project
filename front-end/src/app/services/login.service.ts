@@ -78,10 +78,15 @@ export class LoginService {
 
   logout() {
     localStorage.removeItem('token');
+    this.isLoggedIn = false;
   }
   
   loggedIn():any {
     const token =  localStorage.getItem('token') ?? '';
-    return !this.helper.isTokenExpired(token);
+    if (this.helper.isTokenExpired(token) == true) {
+      this.logout();
+      return false
+    }
+    return true;
   }
 }

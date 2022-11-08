@@ -59,8 +59,18 @@
         </tbody>
       </table>
       <div class="text-center">
-        <button id="agregarboton" type="submit" [routerLink]="['/cart']" routerLinkActive="router-link-active"
-          class="btn btn-primary">Agregar</button>
+        <button id="agregarboton" type="submit" class="btn btn-primary" (click)="add_product_cart(Producto.id_producto, Producto.nombre, Producto.marca, Producto.imagen)">Agregar</button>
+      </div>
+    </div>
+    <div class="col-12" *ngIf="flag_alert == true">
+      <div class="alert-container">
+        <div class="alert alert-success alert-add-product alert-dismissible" data-bs-dismiss="alert" role="alert">
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          <h4 class="alert-heading">¡Producto agregado con éxito!</h4>
+          <hr>
+          <p>Producto agregado:</p>
+          <p>{{Producto.nombre}}</p>
+        </div>
       </div>
     </div>
   </div>

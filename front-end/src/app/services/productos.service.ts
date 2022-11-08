@@ -36,4 +36,8 @@ export class ProductosService {
   GetListProductsBestPrice():Observable<any> {
     return this.http.get(`${environment.hostname}/ListProductsBestPrice`);
   }
+  
+  GetAllProductsName(search:any):Observable<any> {
+    return this.http.get(`${environment.hostname}/AllProductsName/${search}`);
+  }
 }

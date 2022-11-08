@@ -13,6 +13,15 @@ const ListProductsBestPrice = require('./Productos/get_list_products_best_price'
 const Usuario = require('./Usuarios/get_user');
 const InsertarUsuario = require('./Usuarios/post_user');
 const Login = require('./Usuarios/post_login');
+const BrandsFilter = require('./Filter/post_brands_filter');
+const CategoriesFilter = require('./Filter/post_categories_filter');
+const TypesFilter = require('./Filter/post_types_filter');
+const ProductsFilter = require('./Filter/get_products_filter');
+const TotalProductsFilter = require('./Filter/get_total_filter');
+const ListSupermarkets = require('./Supermercados/get_supermarkets');
+const ProductsCart = require('./Cart/get_products_cart');
+const AllProductsName = require('./Productos/get_all_products_name');
+
 
 const config = {
   hostname: "127.0.0.1",
@@ -31,10 +40,19 @@ app.get('/Categoria/:id', Categoria.GetCategory);
 app.get('/ProductosCategoria/:id', ListProductosCategoria.GetListProductosCategoria);
 app.get('/ListProductsBestPrice', ListProductsBestPrice.GetListProductsBestPrice);
 app.get('/Usuario/:email', Usuario.GetUser);
+app.get('/FilterProducts/:categoria/:marca/:tipo/:precio_inicial/:precio_final/:offset', ProductsFilter.GetProductsFilter);
+app.get('/TotalFilter/:categoria/:marca/:tipo/:precio_inicial/:precio_final', TotalProductsFilter.GetTotalProductsFilter);
+app.get('/Supermarkets', ListSupermarkets.GetSupermarkets);
+app.get('/ProductsCart/:ids', ProductsCart.GetProductsCart);
+app.get('/AllProductsName/:search', AllProductsName.GetAllProductsName);
+
 
 /* POST methods */
 app.post('/InsertarUsuario', bodyParser.json(), InsertarUsuario.PostUsuario);
 app.post('/Login', bodyParser.json(), Login.PostLogin);
+app.post('/FilterBrand', bodyParser.json(), BrandsFilter.PostBrandsFilter);
+app.post('/FilterCategory', bodyParser.json(), CategoriesFilter.PostCategoriesFilter);
+app.post('/FilterType', bodyParser.json(), TypesFilter.PostTypesFilter);
 
 app.listen(config, () =>{
     console.log(`Conectando al servidor http://${config.hostname}:${config.port}`);

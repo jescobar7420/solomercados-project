@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoginService } from 'src/app/services/login.service';
 import { Usuario } from 'src/app/interfaces/usuario';
-import { map } from 'rxjs';
-import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-login',
