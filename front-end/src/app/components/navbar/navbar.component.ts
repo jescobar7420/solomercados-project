@@ -1,5 +1,5 @@
 import { Component, ViewChild, ElementRef, Output, EventEmitter, Input, SimpleChanges } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LoginService } from 'src/app/services/login.service';
 import { ProductosService } from 'src/app/services/productos.service';
 import { JwtHelperService } from '@auth0/angular-jwt';
@@ -18,7 +18,7 @@ export class NavbarComponent {
   
   helper = new JwtHelperService();
     
-  constructor(private http_login:LoginService, private http_product:ProductosService, private router: Router) {}
+  constructor(private http_login:LoginService, private http_product:ProductosService, private router: Router, private route: ActivatedRoute) {}
  
   ngOnInit(): void {
   }
@@ -57,6 +57,8 @@ export class NavbarComponent {
   clear_search() {
     this.showList  = false;
     this.Productos = [];
+    const input = document.getElementById('search') as HTMLInputElement | null;
+    /* input. */
   }
   
   logout() {
@@ -70,10 +72,5 @@ export class NavbarComponent {
     }).then(a => {
       this.router.navigate(['login']);
     })
-  }
-  
-  page_product(id_producto:number) {
-    this.clear_search()
-    this.router.navigate(['/details', id_producto]);
   }
 }

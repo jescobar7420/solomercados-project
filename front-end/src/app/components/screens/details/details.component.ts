@@ -18,11 +18,7 @@ export class DetailsComponent implements OnInit {
   ListaSuperProducto = new Array<SupermercadosProductos>();
   flag_alert:boolean = false;
 
-  constructor(private route: ActivatedRoute, private httpProduct:ProductosService, private httpSuperProduct:SupermercadosProductosService) { 
-    this.route.params.subscribe(datos => {
-      this.id_producto = datos["id"]
-    })
-    
+  constructor(private route: ActivatedRoute, private httpProduct:ProductosService, private httpSuperProduct:SupermercadosProductosService) {    
     this.Producto = {
       id_producto: 0,
       categoria: '',
@@ -36,10 +32,17 @@ export class DetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.cambioDeRuta();
+  }
+  
+  get_product():void {
     this.httpProduct.GetProducto(this.id_producto).subscribe(datos => {
       this.Producto = datos[0];
     })
-
+  }
+  
+  get_list_supermarket(): void {
+    this.ListaSuperProducto = [];
     this.httpSuperProduct.GetListSuperProductsId(this.id_producto).subscribe(datos =>{
       for(let i=0; i<datos.items.length; i++) {
         this.ListaSuperProducto.push(datos.items[i]);
@@ -115,5 +118,13 @@ export class DetailsComponent implements OnInit {
     
     products.push({id_producto: id_producto, nombre: nombre, marca: marca, imagen: imagen, multiplicador: 1});
     localStorage.setItem('cart', JSON.stringify(products));
+  }
+  
+  cambioDeRuta(): void {
+    this.route.params.subscribe(params => {
+      this.id_producto = params['id'];
+      this.get_product();
+      this.get_list_supermarket();
+   });
   }
 }

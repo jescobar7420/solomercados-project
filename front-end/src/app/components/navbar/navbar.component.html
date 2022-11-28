@@ -43,7 +43,7 @@
                         <a class="btn btn-light" role="button" aria-expanded="false" (click)="search_product()"><mat-icon id="icon_search">search</mat-icon></a>
                     </form>
                     <ul class="list-group" [hidden]="!showList">
-                        <li class="list-group-item py-1" *ngFor="let producto of Productos" (click)="page_product(producto.id_producto)">
+                        <li class="list-group-item py-1" *ngFor="let producto of Productos" [routerLink]="['/details', producto.id_producto]" routerLinkActive="router-link-active" (click)="clear_search()">
                             <a>{{producto.nombre}}</a>
                         </li>
                     </ul>
