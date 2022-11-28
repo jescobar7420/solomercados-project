@@ -40,4 +40,5 @@ export class ProductosService {
   GetAllProductsName(search:any):Observable<any> {
     return this.http.get(`${environment.hostname}/AllProductsName/${search}`);
   }
+
 }

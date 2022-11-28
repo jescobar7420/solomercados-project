@@ -9,6 +9,7 @@ const GetAllProductsName = (req:any, res:any) => {
                  FROM productos AS p
                  WHERE p.nombre <> 'NA' AND p.nombre <> 'E' AND p.nombre LIKE '%${search}%'
                  LIMIT 10`
+
     pool.query(query, (err:any, respuesta:any) => {
         if(err) {
             console.log(err);

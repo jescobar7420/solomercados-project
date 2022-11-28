@@ -4,6 +4,7 @@ import { ProductosService } from 'src/app/services/productos.service';
 import { SupermercadosProductosService } from 'src/app/services/supermercados-productos.service';
 import { SupermercadosProductos } from 'src/app/interfaces/supermercados-productos';
 import { Product } from 'src/app/interfaces/product';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-details',
@@ -42,8 +43,21 @@ export class DetailsComponent implements OnInit {
     this.httpSuperProduct.GetListSuperProductsId(this.id_producto).subscribe(datos =>{
       for(let i=0; i<datos.items.length; i++) {
         this.ListaSuperProducto.push(datos.items[i]);
+        this.ListaSuperProducto[i].fecha = this.convert_date(datos.items[i].fecha)
       }
     })
+  }
+  
+  onImgError(event:any) { 
+    event.target.src = '../../../assets/icon-alert.png';
+  }
+  
+  convert_date(fecha:Date) {
+    var new_fecha = new Date(fecha);
+    var dd = String(new_fecha.getDate()).padStart(2, '0');
+    var mm = String(new_fecha.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = String(new_fecha.getFullYear());
+    return dd + '/' + mm + '/' + yyyy;
   }
   
   exists_ingredients(ingredients:string) {
@@ -65,6 +79,26 @@ export class DetailsComponent implements OnInit {
   }
   
   async add_product_cart(id_producto:number, nombre:string, marca:string, imagen:string) {
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      background: '#ededed',
+      color: '#575757',
+      timer: 2500,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    })
+    
+    Toast.fire({
+      icon: 'success',
+      title: 'Agregado con éxito.',
+      text: nombre
+    })
+  
     let products = JSON.parse(localStorage.getItem('cart')!)|| [];
     
     for(let i=0; i<products.length; i++) {

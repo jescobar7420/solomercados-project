@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { Supermarket } from 'src/app/interfaces/supermarket';
 import { ProductCart } from 'src/app/interfaces/product-cart';
 import { CartService } from 'src/app/services/cart.service';
+import { LoginService } from 'src/app/services/login.service';
+import { JwtHelperService } from '@auth0/angular-jwt';
+import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-cart',
@@ -18,8 +22,10 @@ export class CartComponent implements OnInit {
   ProductsInCart:any[] = [];
   total_santa:number = 0;
   total_jumbo:number = 0;
+  
+  helper = new JwtHelperService();
 
-  constructor(private http:CartService) { }
+  constructor(private http:CartService, private login:LoginService, private router: Router) { }
 
   
   ngOnInit(): void {
@@ -33,6 +39,10 @@ export class CartComponent implements OnInit {
     }
     
     this.refresh_rows(list_id);
+  }
+  
+  onImgError(event:any) { 
+    event.target.src = '../../../assets/icon-alert.png';
   }
 
   numberWithPoints(precio:any) {
@@ -242,9 +252,106 @@ export class CartComponent implements OnInit {
     this.calculate_total(); 
   }
   
-  clear_cart() {
+  remove_localstorage() {
     this.ListRow = [];
     this.ProductsInCart = [];
     localStorage.removeItem('cart');
+  }
+  
+  clear_cart() {
+    Swal.fire({
+      icon: 'warning',
+      title: '¡Cuidado!',
+      text: 'Si aceptas se borrará todos los productos de tu carrito.',
+      confirmButtonColor: '#FF6F1E'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.remove_localstorage();
+        
+        Swal.fire({
+          icon: 'success',
+          title: '¡Carrito limpio!',
+          text: 'El carrito se vació correctamente.',
+          confirmButtonColor: '#FF6F1E'
+        })
+      }
+    })
+  }
+  
+  get_best_total_price() {
+    if (this.total_santa == 0) {
+      return this.total_jumbo;
+    }
+    
+    if (this.total_jumbo == 0) {
+      return this.total_santa;
+    }
+  
+    if (this.total_jumbo < this.total_santa) {
+      return this.total_jumbo;
+    }
+    return this.total_santa;
+  }
+  
+  get_date() {
+    var new_fecha = new Date();
+    var dd = String(new_fecha.getDate()).padStart(2, '0');
+    var mm = String(new_fecha.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = String(new_fecha.getFullYear());
+    return mm + '/' + dd + '/' + yyyy;
+  }
+  
+  values_query(id_cotizacion:number):string {
+    var query:string = "";
+    for(let i=0; i<this.ListRow.length; i++) {
+      query = query + '(' + id_cotizacion + ',' + this.ListRow[i].id_producto + ',' + this.ListRow[i].multiplicador + ')';
+      if (i < this.ListRow.length-1) {
+        query = query + ', ';
+      } else {
+        query = query + ';';
+      }
+    }
+    
+    return query;
+  }
+  
+  save_cart() {
+    Swal.fire({
+      icon: 'warning',
+      title: '¡Cuidado!',
+      text: 'Si aceptas finalizará tu cotización actual.',
+      showCancelButton: true,
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#FF6F1E'
+    }).then((result) => {
+      if (result.isConfirmed) {    
+        Swal.fire({
+          icon: 'success',
+          title: '¡Cotización guardada!',
+          text: 'La cotización se guardó exitosamente.',
+          confirmButtonColor: '#FF6F1E'
+        }).then(a => {
+          this.remove_localstorage();
+          this.router.navigate(['history']);
+        })
+      }
+    })
+  
+    var monto_total = this.get_best_total_price();
+    var fecha = this.get_date();
+    var token = localStorage.getItem('token') ?? '';
+    var decodetoken = this.helper.decodeToken(token)
+    var id_usuario:number = decodetoken['data']['id_usuario']
+
+    this.http.PostCotizacion(id_usuario, monto_total, fecha).subscribe(datos => {
+      var id_cotizacion = datos['item']['id_cotizacion'];
+      var values:string;
+      values = this.values_query(id_cotizacion);
+      this.http.PostCotizacionProductos(values).subscribe();
+    })
+    }
+  
+  isLoggedIn():boolean {
+    return this.login.loggedIn();
   }
 }

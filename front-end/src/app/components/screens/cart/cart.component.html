@@ -1,4 +1,4 @@
-<div class="container-fluid px-5">
+<div class="container-fluid cart px-5">
   <div class="row row-title">
     <h2>TU CARRITO</h2>
   </div>
@@ -8,7 +8,7 @@
         <thead>
           <tr>
             <th scope="col">PRODUCTOS</th>
-            <th *ngFor="let super of ListaSupermercados"><img src="{{super.logo}}" alt="{{super.supermercado}}" class="logo"></th>
+            <th *ngFor="let super of ListaSupermercados"><img src="{{super.logo}}" alt="{{super.supermercado}}" class="logo" (error) ="onImgError($event)"></th>
             <th></th>
             <th></th>
           </tr>
@@ -20,7 +20,7 @@
                 <div class="row justify-content-start text-start">
                   <div class="col-3">
                     <a [routerLink]="['/details', row.id_producto]" routerLinkActive="router-link-active">
-                      <img src="{{row.imagen}}" alt="{{row.nombre}}" class="image-product img-thumbnail">
+                      <img src="{{row.imagen}}" alt="{{row.nombre}}" class="image-product img-thumbnail" (error) ="onImgError($event)">
                     </a>
                   </div>
                   <div class="col-9 details-product">
@@ -79,7 +79,7 @@
   <div class="row" *ngIf="ProductsInCart.length > 0">
     <div class="col-12 text-center buttons">
       <button class="btn btn-primary" id="clear_button" (click)="clear_cart()">LIMPIAR</button>
-      <button class="btn btn-primary" id="save_button">GUARDAR</button>
+      <button class="btn btn-primary" id="save_button" (click)="save_cart()" [disabled]="isLoggedIn() == false">GUARDAR</button>
     </div>
   </div>
   <div class="row text-center" *ngIf="ProductsInCart.length == 0">

@@ -5,6 +5,8 @@ import { Categorias } from 'src/app/interfaces/categorias';
 import { Marca } from 'src/app/interfaces/marca';
 import { Tipo } from 'src/app/interfaces/tipo';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import Swal from 'sweetalert2';
+
 
 @Component({
   selector: 'app-filter',
@@ -206,6 +208,26 @@ export class FilterComponent implements OnInit {
   }
   
   async add_product_cart(id_producto:number, nombre:string, marca:string, imagen:string) {
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'bottom-start',
+      showConfirmButton: false,
+      timer: 2500,
+      background: '#ededed',
+      color: '#575757',
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    })
+    
+    Toast.fire({
+      icon: 'success',
+      title: 'Agregado con éxito.',
+      text: nombre
+    })
+  
     let products = JSON.parse(localStorage.getItem('cart')!) || [];
     
     for(let i=0; i<products.length; i++) {
@@ -223,5 +245,10 @@ export class FilterComponent implements OnInit {
     
     products.push({id_producto: id_producto, nombre: nombre, marca: marca, imagen: imagen, multiplicador: 1});
     localStorage.setItem('cart', JSON.stringify(products));
+    return
+  }
+  
+  onImgError(event:any) { 
+    event.target.src = '../../../assets/icon-alert.png';
   }
 }

@@ -28,4 +28,12 @@ export class CartService {
   GetProductsCart(list_id:string):Observable<any> {
     return this.http.get(`${environment.hostname}/ProductsCart/${list_id}`);
   }
+  
+  PostCotizacion(id_usuario:number, monto_total:number, fecha:string):Observable<any> {
+    return this.http.post(`${environment.hostname}/InsertarCotizacion`, JSON.stringify({"id_usuario": id_usuario, "monto_total": monto_total, "fecha": fecha}), this.HttpUploadOptions);
+  }
+  
+  PostCotizacionProductos(values:string):Observable<any> {
+    return this.http.post(`${environment.hostname}/InsertarCotizacionProductos`, JSON.stringify({"values": values}), this.HttpUploadOptions);
+  }
 }

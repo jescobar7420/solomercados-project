@@ -2,7 +2,7 @@
   <h2>{{Producto.nombre}}</h2>
   <div class="row justify-content-md-center">
     <div class="card card-image col-sm-12 col-md-12 col-lg-4 col-xl-4">
-      <img class="card-img-top" src="{{Producto.imagen}}" alt="{{Producto.nombre}}">
+      <img class="card-img-top" src="{{Producto.imagen}}" alt="{{Producto.nombre}}" (error) ="onImgError($event)">
     </div>
     <div class="card col-sm-12 col-md-12 col-lg-8 col-xl-8">
       <div class="card-body">
@@ -50,7 +50,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let row of ListaSuperProducto">
-            <td><a href="{{row.url_product}}">{{row.supermercado}}</a></td>
+            <td><a href="{{row.url_product}}">{{row.supermercado}}<mat-icon>open_in_new</mat-icon></a></td>
             <td>{{row.fecha}}</td>
             <td>{{numberWithPoints(row.precio_normal)}}</td>
             <td>{{numberWithPoints(row.precio_oferta)}}</td>
@@ -60,17 +60,6 @@
       </table>
       <div class="text-center">
         <button id="agregarboton" type="submit" class="btn btn-primary" (click)="add_product_cart(Producto.id_producto, Producto.nombre, Producto.marca, Producto.imagen)">Agregar</button>
-      </div>
-    </div>
-    <div class="col-12" *ngIf="flag_alert == true">
-      <div class="alert-container">
-        <div class="alert alert-success alert-add-product alert-dismissible" data-bs-dismiss="alert" role="alert">
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          <h4 class="alert-heading">¡Producto agregado con éxito!</h4>
-          <hr>
-          <p>Producto agregado:</p>
-          <p>{{Producto.nombre}}</p>
-        </div>
       </div>
     </div>
   </div>

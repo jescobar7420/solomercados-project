@@ -31,4 +31,8 @@ export class ListProductsComponent implements OnInit {
   numberWithPoints(precio:string) {
     return precio.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   }
+  
+  onImgError(event:any) { 
+    event.target.src = '../../../assets/icon-alert.png';
+  }
 }

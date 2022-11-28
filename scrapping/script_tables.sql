@@ -64,3 +64,24 @@ CREATE TABLE usuarios (
     email VARCHAR(30) NOT NULL,
     CONSTRAINT pk_usuarios PRIMARY KEY (id_usuario)
 );
+
+CREATE TABLE cotizaciones (
+    id_cotizacion SERIAL NOT NULL,
+    id_usuario INTEGER NOT NULL,
+    monto_total BIGINT NOT NULL,
+    fecha DATE DEFAULT to_date('1/1/1900','DD/MM/YYYY'),
+    CONSTRAINT pk_cotizaciones PRIMARY KEY (id_cotizacion),
+    CONSTRAINT fk_cotizaciones_usuarios FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE cotizaciones_productos (
+    id_cotizacion INTEGER NOT NULL,
+    id_producto INTEGER NOT NULL,
+    cantidad INTEGER NOT NULL,
+    PRIMARY KEY (id_cotizacion, id_producto),
+    CONSTRAINT fk_cotizaciones_productos_cotizacion FOREIGN KEY (id_cotizacion) REFERENCES cotizaciones(id_cotizacion)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_cotizaciones_productos_producto FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);

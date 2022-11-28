@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoginService } from 'src/app/services/login.service';
 import { Usuario } from 'src/app/interfaces/usuario';
+import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -13,10 +15,8 @@ export class LoginComponent implements OnInit {
   form_register:FormGroup;
   form_login:FormGroup;
   Usuario:Usuario;
-  flag_register:boolean;
-  flag_login:boolean;
 
-  constructor(public fb_register:FormBuilder, public fb_login:FormBuilder, private http:LoginService) {
+  constructor(public fb_register:FormBuilder, public fb_login:FormBuilder, private http:LoginService, private router: Router) {
     this.form_register = this.fb_register.group({
       email_r: ["", [Validators.required, Validators.email]],
       nombre: ["", [Validators.required]],
@@ -33,9 +33,6 @@ export class LoginComponent implements OnInit {
       nombre: '',
       email: ''
     }
-    
-    this.flag_register = false;
-    this.flag_login = false;
   }
 
   
@@ -56,11 +53,26 @@ export class LoginComponent implements OnInit {
       
       await this.http.GetUsuario(email).subscribe(datos => {
         if(typeof(datos[0]) === 'undefined') {
-          this.flag_register = false;
           this.http.PostUsuario(nombre, password, email).subscribe();
-          this.http.GetUsuario(email).subscribe(datos => {this.Usuario = datos[0]})
+          this.http.PostLogin(email, password);
+          
+          Swal.fire({
+            icon: 'success',
+            title: 'Registro con éxito',
+            text: '¡Bienvenido ' + nombre + '!',
+            confirmButtonColor: '#FF6F1E'
+          }).then(a => {
+            this.router.navigate(['']);
+          })
         } else {
-          this.flag_register = true;
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: '¡Email ya se encuentra registrado!',
+            confirmButtonColor: '#FF6F1E'
+          }).then(a => {
+            this.router.navigate(['login']);
+          })
         }
       })
     }
@@ -74,7 +86,23 @@ export class LoginComponent implements OnInit {
       await this.http.PostLogin(email, password);
         
       if (this.http.isLoggedIn) {
-        this.Usuario = this.http.currentUser;
+        Swal.fire({
+          icon: 'success',
+          title: 'Ingreso con éxito',
+          text: '¡Bienvenido ' + this.http.currentUser.nombre + '!',
+          confirmButtonColor: '#FF6F1E'
+        }).then(a => {
+          this.router.navigate(['']);
+        })
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: '¡Email o contraseña incorrecta!',
+          confirmButtonColor: '#FF6F1E'
+        }).then(a => {
+          this.router.navigate(['login']);
+        })
       }
     }
   }
