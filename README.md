@@ -48,5 +48,5 @@ To run the back-end:
 
 ```bash
 cd ./back-end
-node .\js\app.js
+node ./js/app.js
 ```
