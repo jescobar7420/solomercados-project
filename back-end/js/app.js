@@ -20,6 +20,7 @@ const AllProductsName = require('./Productos/get_all_products_name');
 const CotizacionesUsuario = require('./Cotizaciones/get_cotizaciones_user');
 const CotizacionesProductos = require('./CotizacionesProductos/get_productos_cotizaciones');
 const TotalCotizacionUser = require('./Cotizaciones/get_total_cotizaciones_user');
+const MostViewProducts = require('./Productos/get_most_view_products_day');
 /* Imports POST */
 const InsertarUsuario = require('./Usuarios/post_user');
 const Login = require('./Usuarios/post_login');
@@ -51,6 +52,7 @@ app.get('/AllProductsName/:search', AllProductsName.GetAllProductsName);
 app.get('/CotizacionesUsuario/:id/:offset', CotizacionesUsuario.GetCotizacionesUsuario);
 app.get('/CotizacionesProductos/:id', CotizacionesProductos.GetCotizacionProductos);
 app.get('/TotalCotizacionesUser/:id', TotalCotizacionUser.GetTotalCotizacionUser);
+app.get('/MostViewProductos', MostViewProducts.GetMostViewProductsDay);
 /* POST methods */
 app.post('/InsertarUsuario', bodyParser.json(), InsertarUsuario.PostUsuario);
 app.post('/Login', bodyParser.json(), Login.PostLogin);

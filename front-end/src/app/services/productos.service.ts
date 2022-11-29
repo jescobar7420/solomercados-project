@@ -41,4 +41,7 @@ export class ProductosService {
     return this.http.get(`${environment.hostname}/AllProductsName/${search}`);
   }
 
+  GetMostViewProductsDay():Observable<any> {
+    return this.http.get(`${environment.hostname}/MostViewProductos`);
+  }
 }

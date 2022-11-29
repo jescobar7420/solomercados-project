@@ -57,8 +57,9 @@ export class NavbarComponent {
   clear_search() {
     this.showList  = false;
     this.Productos = [];
-    const input = document.getElementById('search') as HTMLInputElement | null;
-    /* input. */
+    var dirtyFormID = 'search_bar';
+    var resetForm = <HTMLFormElement>document.getElementById(dirtyFormID);
+    resetForm.reset();
   }
   
   logout() {
