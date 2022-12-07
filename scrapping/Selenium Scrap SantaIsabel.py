@@ -420,7 +420,8 @@ def get_id_table(cursor, column_id, table_name, column_name, condition):
     try:
         cursor.execute(query)
         return cursor.fetchall()[0]
-    except:
+    except (Exception, psycopg2.Error) as error:
+        print("Error while connecting to PostgreSQL", error)
         return None
     
 
@@ -450,6 +451,11 @@ def exists_row_database_two_conditions(cursor, column_name1, column_name2, table
         return None
 
 
+def update_table(connection, cursor, table_name, column_condition_name, column_set_name, condition, value):
+    query = """ UPDATE {} SET {} = '{}' WHERE {} = '{}'""".format(table_name, column_set_name, value, column_condition_name, condition)
+    return execute_command_database(connection, cursor, query)
+
+
 # Connect database
 connection = psycopg2.connect(user=DB_USER,
                               password=DB_PASS,
@@ -459,7 +465,6 @@ connection = psycopg2.connect(user=DB_USER,
 cursor = connection.cursor()
 
 # MAIN
-date_scrap = date.today()
 total_products = 0
 
 # -- DataFrames --
@@ -480,7 +485,7 @@ if exists(MAIN_PATH + '/Data/error_products.csv'):
 # Try to connect to main website
 while True:
     try:
-        driver = webdriver.Chrome(MAIN_PATH + '/chromedriver.exe')
+        driver = webdriver.Chrome(MAIN_PATH + '/chromedriver2.exe')
         driver.set_window_size(1280, 720)
         driver.get(MAIN_URL)
         sleep(1)
@@ -618,13 +623,15 @@ for i in range(len(list_url_categories)):
             if insert_into_productos(connection, cursor, id_category, id_brand, id_type, data_product[0], data_product[1], data_product[2], data_product[3]) == True:
                 flag_product = True
         else:
-            print('[{}/{}] > Product already exists - {}'.format(cont_products_category, total_products_category, data_product[0]))
+            id_product = get_id_table(cursor, 'id_producto', 'productos', 'nombre', data_product[0])[0]
+            update_table(connection, cursor, 'productos', 'id_producto', 'imagen', id_product, data_product[1])
             flag_product = False
         
         # Add supermarket_product if doesn't exists in database
         id_product = get_id_table(cursor, 'id_producto', 'productos', 'nombre', data_product[0])[0]
+        data_superproduct = get_data_superproduct_beautifulsoup(soup)
         if exists_row_database_two_conditions(cursor, 'id_producto', 'id_supermercado', 'supermercados_productos', id_product, id_supermarket) == False:
-            data_superproduct = get_data_superproduct_beautifulsoup(soup)
+            date_scrap = date.today()
             if insert_into_supermercados_productos(connection, cursor, id_supermarket, id_product, data_superproduct[0], data_superproduct[1], url_product, date_scrap, data_superproduct[2]) == True:
                 flag_superproduct = True
             else:

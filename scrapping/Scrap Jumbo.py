@@ -36,6 +36,11 @@ def find_by_class_beautifulsoup(soup, tag, class_name):
     return data
 
 
+def update_table(connection, cursor, table_name, column_condition_name, column_set_name, condition, value):
+    query = """ UPDATE {} SET {} = '{}' WHERE {} = '{}'""".format(table_name, column_set_name, value, column_condition_name, condition)
+    return execute_command_database(connection, cursor, query)
+
+
 def find_all_by_class_beautifulsoup(soup, tag, class_name):
     try:
         data = soup.find_all(tag, class_ = class_name)
@@ -469,7 +474,6 @@ connection = psycopg2.connect(user=DB_USER,
 cursor = connection.cursor()
 
 # MAIN
-date_scrap = date.today()
 total_products = 0
 
 # -- DataFrames --
@@ -477,7 +481,7 @@ columns_category = ['id_category', 'category']
 columns_error = ['url_product', 'category', 'id_supermarket']
 df_error_products = pd.DataFrame(columns=columns_error)
 
-# Read data and insert into to dataframe
+
 df_products = sqlio.read_sql_query('SELECT * FROM productos', connection)
 df_type = sqlio.read_sql_query('SELECT * FROM tipos', connection)
 df_brand = sqlio.read_sql_query('SELECT * FROM marcas', connection)
@@ -626,15 +630,17 @@ for i in range(len(list_url_categories)):
         # Add product if doesn't exists in database
         if exists_row_database(cursor, 'nombre', 'productos', data_product[0]) == False:
             if insert_into_productos(connection, cursor, id_category, id_brand, id_type, data_product[0], data_product[1], data_product[2], data_product[3]) == True:
-                flag_product = True
+                flag_product = True   
         else:
-            print('[{}/{}] > Product already exists - {}'.format(cont_products_category, total_products_category, data_product[0]))
+            id_product = get_id_table(cursor, 'id_producto', 'productos', 'nombre', data_product[0])[0]
+            update_table(connection, cursor, 'productos', 'id_producto', 'imagen', id_product, data_product[1])
             flag_product = False
         
         # Add supermarket_product if doesn't exists in database
         id_product = get_id_table(cursor, 'id_producto', 'productos', 'nombre', data_product[0])[0]
+        data_superproduct = get_data_superproduct_beautifulsoup(soup)
         if exists_row_database_two_conditions(cursor, 'id_producto', 'id_supermercado', 'supermercados_productos', id_product, id_supermarket) == False:
-            data_superproduct = get_data_superproduct_beautifulsoup(soup)
+            date_scrap = date.today()
             if insert_into_supermercados_productos(connection, cursor, id_supermarket, id_product, data_superproduct[0], data_superproduct[1], url_product, date_scrap, data_superproduct[2]) == True:
                 flag_superproduct = True
             else:
@@ -642,5 +648,5 @@ for i in range(len(list_url_categories)):
         
         total_products += 1
         cont_products_category += 1
-        print('[{}/{}] > {} - ${} > ${}'.format(cont_products_category, total_products_category, data_product[0], data_superproduct[1], data_superproduct[0]))          
+        print('[{}/{}] > {} - {} - ${} > ${}'.format(cont_products_category, total_products_category, data_product[0], brand_product, data_superproduct[1], data_superproduct[0]))          
 print('Total products from {}: {}'.format(NAME_SUPERMARKET, total_products))
